@@ -48,14 +48,12 @@ func (ctrl *AuthController) GetByID(c echo.Context) error {
 
 func (ctrl *AuthController) Register(c echo.Context) error {
 	var result string
+	input := request.User{}
 	picture, _ := c.FormFile("picture")
 	if picture != nil {
 		src, _ := picture.Open()
 		defer src.Close()
 		result, _ = uploaders.UploadToS3(c, picture.Filename, src)
-	}
-	input := request.User{}
-	if result == "" {
 		input.Picture = result
 	}
 	if err := c.Bind(&input); err != nil {
@@ -70,14 +68,12 @@ func (ctrl *AuthController) Register(c echo.Context) error {
 
 func (ctrl *AuthController) CreateAdmin(c echo.Context) error {
 	var result string
+	input := request.User{}
 	picture, _ := c.FormFile("picture")
 	if picture != nil {
 		src, _ := picture.Open()
 		defer src.Close()
 		result, _ = uploaders.UploadToS3(c, picture.Filename, src)
-	}
-	input := request.User{}
-	if result == "" {
 		input.Picture = result
 	}
 	if err := c.Bind(&input); err != nil {
@@ -94,17 +90,14 @@ func (ctrl *AuthController) Update(c echo.Context) error {
 	var id string = c.Param("id")
 
 	var result string
+	input := request.User{}
 	picture, _ := c.FormFile("picture")
 	if picture != nil {
 		src, _ := picture.Open()
 		defer src.Close()
 		result, _ = uploaders.UploadToS3(c, picture.Filename, src)
-	}
-	input := request.User{}
-	if result == "" {
 		input.Picture = result
 	}
-
 	if err := c.Bind(&input); err != nil {
 		return controllers.NewResponse(c, http.StatusBadRequest, "failed", "invalid request", "")
 	}
