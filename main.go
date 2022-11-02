@@ -8,9 +8,15 @@ import (
 	"os/signal"
 	_dbDriver "sipencari-api/drivers/mysql"
 	_middleware "sipencari-api/app/middlewares"
+
 	_driverFactory "sipencari-api/drivers"
+
 	_userUsecase "sipencari-api/businesses/users"
 	_userController "sipencari-api/controllers/users"
+
+	_categoryUsecase "sipencari-api/businesses/categories"
+	_categoryController "sipencari-api/controllers/categories"
+
 	_routes "sipencari-api/app/routes"
 	util "sipencari-api/utils"
 	"sync"
@@ -50,10 +56,17 @@ func main() {
 	userUsecase := _userUsecase.NewUserUsecase(userRepo, &configJWT)
 	userCtrl := _userController.NewUserController(userUsecase)
 
+	categoryRepo := _driverFactory.NewCategoryRepository(db)
+	categoryUsecase := _categoryUsecase.NewCategoryUsecase(categoryRepo)
+	categoryCtrl := _categoryController.NewCategoryController(categoryUsecase)
+
+
+
 	routesInit := _routes.ControllerList{
 		LoggerMiddleware: configLogger.Init(),
 		JWTMIddleware: configJWT.Init(),
 		AuthController: *userCtrl,
+		CategoryController: *categoryCtrl,
 	}
 	routesInit.RouteRegister(e)
 
