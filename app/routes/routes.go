@@ -33,11 +33,11 @@ func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	users.PUT("/:id", cl.AuthController.Update, middlewares.IsAuthorized)    // update user by id
 	users.DELETE("/:id", cl.AuthController.Delete, middlewares.IsAuthorized) // delete user
 
-	categories := e.Group("/categories", middleware.JWTWithConfig(cl.JWTMIddleware))      // category
-	categories.GET("", cl.CategoryController.GetAll)                                      // get all category
-	categories.GET("/:category_id", cl.CategoryController.GetByID)                        // get category by ID
-	categories.POST("", cl.CategoryController.Create, middlewares.IsAdmin)                // create category
-	categories.PUT("/:category_id", cl.CategoryController.Update, middlewares.IsAdmin)    // update category
+	categories := e.Group("/categories", middleware.JWTWithConfig(cl.JWTMIddleware)) // category
+	categories.GET("", cl.CategoryController.GetAll) // get all category 
+	categories.GET("/:category_id", cl.CategoryController.GetByID) // get category by ID
+	categories.POST("", cl.CategoryController.Create, middlewares.IsAdmin) // create category
+	categories.PUT("/:category_id", cl.CategoryController.Update, middlewares.IsAdmin) // update category
 	categories.DELETE("/:category_id", cl.CategoryController.Delete, middlewares.IsAdmin) // delete category
 
 	withAuth := e.Group("", middleware.JWTWithConfig(cl.JWTMIddleware)) // with auth
