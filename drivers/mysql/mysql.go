@@ -3,6 +3,7 @@ package mysql_driver
 import (
 	"fmt"
 	"log"
+	"sipencari-api/drivers/mysql/categories"
 	"sipencari-api/drivers/mysql/users"
 
 	"gorm.io/driver/mysql"
@@ -37,7 +38,7 @@ func (conf *ConfigDB) InitDB() *gorm.DB {
 
 // Migrating struct into table
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate(&users.User{})
+	db.AutoMigrate(&users.User{}, &categories.Category{})
 }
 
 // Closing Database
