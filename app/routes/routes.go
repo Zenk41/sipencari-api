@@ -66,13 +66,13 @@ func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	likesmissing.GET("", cl.LikeMissingController.GetAll)                                              // get all likesmissing
 	likesmissing.GET("/:like_id", cl.LikeMissingController.GetByID)                                    // get likesmissing by ID
 	likesmissing.POST("", cl.LikeMissingController.Like)                                               // like missing
-	likesmissing.DELETE("", cl.LikeMissingController.Unlike)
+	likesmissing.DELETE("", cl.LikeMissingController.Unlike)                                           // Unlike Missing
 
 	likescomment := e.Group("/missings/:missing_id/comments/:comment_id/likes", middleware.JWTWithConfig(cl.JWTMIddleware)) // likes comment
 	likescomment.GET("", cl.LikeCommentController.GetAll)                                                                   // get all likescomment
 	likescomment.GET("/:like_id", cl.LikeCommentController.GetByID)                                                         // get likescomment by ID
 	likescomment.POST("", cl.LikeCommentController.Like)                                                                    // create likescomment
-	likescomment.DELETE("", cl.LikeCommentController.Unlike)                                                                // create likescomment
+	likescomment.DELETE("", cl.LikeCommentController.Unlike)                                                                // unlike comment
 
 	withAuth := e.Group("", middleware.JWTWithConfig(cl.JWTMIddleware)) // with auth
 	withAuth.POST("/logout", cl.AuthController.Logout)                  // logout
