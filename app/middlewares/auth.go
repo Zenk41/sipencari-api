@@ -57,6 +57,14 @@ func GetUser(c echo.Context) *JWTCustomClaims {
 	return claims
 }
 
+// GetUserID perform get id user from jwt token
+func GetUserID(c echo.Context) string {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JWTCustomClaims)
+	userID := claims.ID
+	return userID
+}
+
 // IsWho perform athorized user with id and admin
 func IsAuthorized(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
