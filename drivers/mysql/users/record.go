@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	ID        string         `json:"id" gorm:"size:100;primaryKey"`
-	Name      string         `json:"name"`
-	Email     string         `json:"email" gorm:"unique"`
-	Password  string         `json:"password"`
+	Name      string         `json:"name" faker:"name"`
+	Email     string         `json:"email" gorm:"unique" faker:"email"`
+	Password  string         `json:"password" faker:"password"`
 	Picture   string         `json:"picture"`
 	IsAdmin   bool           `json:"is_admin"`
 	CreatedAt time.Time      `json:"created_at"`

@@ -16,9 +16,9 @@ func NewMySQLRepository(conn *gorm.DB) likescomment.Repository {
 	}
 }
 
-func (lcr *likesCommentRepository) GetAll() []likescomment.Domain {
+func (lcr *likesCommentRepository) GetAll(idMissing, idComment string) []likescomment.Domain {
 	var rec []LikeComment
-	lcr.conn.Preload("User").Find(&rec)
+	lcr.conn.Preload("User").Find(&rec, "comment_id=?", idComment)
 	likeCommentDomain := []likescomment.Domain{}
 	for _, likeComment := range rec {
 		likeCommentDomain = append(likeCommentDomain, likeComment.ToDomain())
@@ -35,19 +35,19 @@ func (lcr *likesCommentRepository) GetByID(idLike string, idMissing string, idCo
 	return likeComment.ToDomain()
 }
 
-func (lcr *likesCommentRepository) Like(idUser string, idMissing string,  idComment int,likeDomain *likescomment.Domain) likescomment.Domain {
+func (lcr *likesCommentRepository) Like(idUser string, idMissing string, idComment int, likeDomain *likescomment.Domain) likescomment.Domain {
 	var likescomment likescomment.Domain = lcr.GetByID(idUser, idMissing, idComment)
 	rec := FromDomain(likeDomain)
 	rec.CommentID = uint(idComment)
 	if likescomment.UserID != idUser {
 		lcr.conn.Preload("User").
-		Create(&rec)
+			Create(&rec)
 		return rec.ToDomain()
 	}
 	return rec.ToDomain()
 }
 
-func (lcr *likesCommentRepository) Unlike(idUser string, idMissing string,idComment int) bool {
+func (lcr *likesCommentRepository) Unlike(idUser string, idMissing string, idComment int) bool {
 	var likescomment likescomment.Domain = lcr.GetByID(idUser, idMissing, idComment)
 	UnLike := FromDomain(&likescomment)
 	if result := lcr.conn.

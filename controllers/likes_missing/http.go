@@ -22,7 +22,8 @@ func NewLikeMissingController(likeMissingUC likesmissing.Usecase) *LikesMissingC
 }
 
 func (ctrl *LikesMissingController) GetAll(c echo.Context) error {
-	likeData := ctrl.likeMissingUsecase.GetAll()
+	missingID := c.Param("missing_id")
+	likeData := ctrl.likeMissingUsecase.GetAll(missingID)
 	likeMissings := []response.LikeMissing{}
 	for _, like := range likeData {
 		likeMissings = append(likeMissings, response.FromDomain(like))

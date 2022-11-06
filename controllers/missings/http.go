@@ -36,11 +36,6 @@ func (ctrl *MissingController) GetAll(c echo.Context) error {
 func (ctrl *MissingController) GetByID(c echo.Context) error {
 	var id string = c.Param("missing_id")
 	missing := ctrl.missingUsecase.GetByID(id)
-	// userID := middlewares.GetUserID(c)
-	// if userID != missing.UserID {
-	// 	return controllers.NewResponse(c, http.StatusUnauthorized, "", "Unauthorized", "")
-
-	// }
 	if missing.ID == "" {
 		return controllers.NewResponse(c, http.StatusNotFound, "failed", "missing not found", "")
 	}

@@ -23,7 +23,9 @@ func NewLikeCommentController(likeCommentUC likescomment.Usecase) *LikesCommentC
 }
 
 func (ctrl *LikesCommentController) GetAll(c echo.Context) error {
-	likeData := ctrl.likeCommentUsecase.GetAll()
+	var missingId string = c.Param("missing_id")
+	commentId := c.Param("comment_id")
+	likeData := ctrl.likeCommentUsecase.GetAll(missingId, commentId)
 	likeComments := []response.LikeComment{}
 	for _, like := range likeData {
 		likeComments = append(likeComments, response.FromDomain(like))
@@ -55,7 +57,7 @@ func (ctrl *LikesCommentController) Like(c echo.Context) error {
 		return controllers.NewResponse(c, http.StatusBadRequest, "failed", "validation failed", "")
 	}
 
-	likeComment := ctrl.likeCommentUsecase.Like(userID, missingID, commentId,input.ToDomain())
+	likeComment := ctrl.likeCommentUsecase.Like(userID, missingID, commentId, input.ToDomain())
 
 	if likeComment.UserID != userID {
 		return controllers.NewResponse(c, http.StatusNotFound, "failed", "like comment not found", "")
@@ -67,7 +69,6 @@ func (ctrl *LikesCommentController) Unlike(c echo.Context) error {
 	userID := middlewares.GetUserID(c)
 	var missingID string = c.Param("missing_id")
 	commentId, _ := strconv.Atoi(c.Param("comment_id"))
-	
 
 	if isSuccess := ctrl.likeCommentUsecase.Unlike(userID, missingID, commentId); !isSuccess {
 		return controllers.NewResponse(c, http.StatusNotFound, "failed", "cannot unlike like not found", "")
