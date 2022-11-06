@@ -4,6 +4,13 @@ import (
 	"fmt"
 	"log"
 	"sipencari-api/drivers/mysql/categories"
+	"sipencari-api/drivers/mysql/comments"
+	"sipencari-api/drivers/mysql/hashtags"
+	likescomment "sipencari-api/drivers/mysql/likes_comment"
+	likesmissing "sipencari-api/drivers/mysql/likes_missing"
+	"sipencari-api/drivers/mysql/locations_comment"
+	"sipencari-api/drivers/mysql/locations_missing"
+	"sipencari-api/drivers/mysql/missings"
 	"sipencari-api/drivers/mysql/users"
 
 	"gorm.io/driver/mysql"
@@ -38,7 +45,17 @@ func (conf *ConfigDB) InitDB() *gorm.DB {
 
 // Migrating struct into table
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate(&users.User{}, &categories.Category{})
+	db.AutoMigrate(
+		&users.User{},
+		&categories.Category{},
+		&missings.Missing{},
+		&comments.Comment{},
+		&locationscomment.LocationComment{},
+		&locationsmissing.LocationMissing{},
+		&hashtags.Hashtag{},
+		&likescomment.LikeComment{},
+		&likesmissing.LikeMissing{},
+	)
 }
 
 // Closing Database

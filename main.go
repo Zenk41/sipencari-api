@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	_dbDriver "sipencari-api/drivers/mysql"
 	_middleware "sipencari-api/app/middlewares"
+	_dbDriver "sipencari-api/drivers/mysql"
 
 	_driverFactory "sipencari-api/drivers"
 
@@ -16,6 +16,18 @@ import (
 
 	_categoryUsecase "sipencari-api/businesses/categories"
 	_categoryController "sipencari-api/controllers/categories"
+
+	_missingUsecase "sipencari-api/businesses/missings"
+	_missingController "sipencari-api/controllers/missings"
+
+	_commentUsecase "sipencari-api/businesses/comments"
+	_commentController "sipencari-api/controllers/comments"
+
+	_likeMissingUsecase "sipencari-api/businesses/likes_missing"
+	_likeMissingController "sipencari-api/controllers/likes_missing"
+
+	_likeCommentUsecase "sipencari-api/businesses/likes_comment"
+	_likeCommentController "sipencari-api/controllers/likes_comment"
 
 	_routes "sipencari-api/app/routes"
 	util "sipencari-api/utils"
@@ -60,26 +72,44 @@ func main() {
 	categoryUsecase := _categoryUsecase.NewCategoryUsecase(categoryRepo)
 	categoryCtrl := _categoryController.NewCategoryController(categoryUsecase)
 
+	missingRepo := _driverFactory.NewMissingRepository(db)
+	missingUsecase := _missingUsecase.NewMissingUsecase(missingRepo)
+	missingCtrl := _missingController.NewMissingController(missingUsecase)
 
+	commentRepo := _driverFactory.NewCommentRepository(db)
+	commentUsecase := _commentUsecase.NewCommentUsecase(commentRepo)
+	commentCtrl := _commentController.NewCommentController(commentUsecase)
+
+	likeMissingRepo := _driverFactory.NewLikeMissingRepository(db)
+	likeMissingUsecase := _likeMissingUsecase.NewLikeMissingUsecase(likeMissingRepo)
+	likeMissingCtrl := _likeMissingController.NewLikeMissingController(likeMissingUsecase)
+
+	likeCommentRepo := _driverFactory.NewLikeCommentRepository(db)
+	likeCommentUsecase := _likeCommentUsecase.NewLikeCommentUsecase(likeCommentRepo)
+	likeCommentCtrl := _likeCommentController.NewLikeCommentController(likeCommentUsecase)
 
 	routesInit := _routes.ControllerList{
-		LoggerMiddleware: configLogger.Init(),
-		JWTMIddleware: configJWT.Init(),
-		AuthController: *userCtrl,
-		CategoryController: *categoryCtrl,
+		LoggerMiddleware:      configLogger.Init(),
+		JWTMIddleware:         configJWT.Init(),
+		AuthController:        *userCtrl,
+		CategoryController:    *categoryCtrl,
+		MissingController:     *missingCtrl,
+		CommentController:     *commentCtrl,
+		LikeMissingController: *likeMissingCtrl,
+		LikeCommentController: *likeCommentCtrl,
 	}
 	routesInit.RouteRegister(e)
 
 	go func() {
-		if err := e.Start(":" + util.GetEnv("PORT")); err != nil && err != http.ErrServerClosed{
+		if err := e.Start(":" + util.GetEnv("PORT")); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down server")
 		}
 	}()
-	wait := gracefulShutdown(context.Background(), 2 * time.Second, map[string]operation {
-		"database" : func(ctx context.Context) error {
+	wait := gracefulShutdown(context.Background(), 2*time.Second, map[string]operation{
+		"database": func(ctx context.Context) error {
 			return _dbDriver.CloseDB(db)
 		},
-		"http-server" : func(ctx context.Context) error {
+		"http-server": func(ctx context.Context) error {
 			return e.Shutdown(context.Background())
 		},
 	})
@@ -88,7 +118,7 @@ func main() {
 
 }
 
-// gracefulShutdown performs gracefully shutdown 
+// gracefulShutdown performs gracefully shutdown
 func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string]operation) <-chan struct{} {
 	wait := make(chan struct{})
 	go func() {
