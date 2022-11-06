@@ -16,14 +16,14 @@ type Domain struct {
 }
 
 type Usecase interface {
-	GetAll() []Domain
+	GetAll(idMissing, idComment string) []Domain
 	GetByID(idLike string, idMissing string, idComment int) Domain
 	Like(idUser string, idMissing string,  idComment int, likeDomain *Domain) Domain
 	Unlike(idUser string, idMissing string,  idComment int) bool
 }
 
 type Repository interface {
-	GetAll() []Domain
+	GetAll(idMissing, idComment string) []Domain
 	GetByID(idLike string, idMissing string, idComment int) Domain
 	Like(idUser string, idMissing string,  idComment int, likeDomain *Domain) Domain
 	Unlike(idUser string, idMissing string,  idComment int) bool

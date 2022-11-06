@@ -16,9 +16,9 @@ func NewMySQLRepository(conn *gorm.DB) likesmissing.Repository {
 	}
 }
 
-func (lmr *likesMissingRepository) GetAll() []likesmissing.Domain {
+func (lmr *likesMissingRepository) GetAll(idMissing string) []likesmissing.Domain {
 	var rec []LikeMissing
-	lmr.conn.Preload("User").Find(&rec)
+	lmr.conn.Preload("User").Find(&rec, "missing_id=?", idMissing)
 	likeMissingDomain := []likesmissing.Domain{}
 	for _, likeMissing := range rec {
 		likeMissingDomain = append(likeMissingDomain, likeMissing.ToDomain())
