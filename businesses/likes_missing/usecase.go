@@ -12,8 +12,8 @@ func NewLikeMissingUsecase(lmr Repository) Usecase {
 	}
 }
 
-func (lmu *likeMissingUsecase) GetAll() []Domain {
-	return lmu.likeMissingRepository.GetAll()
+func (lmu *likeMissingUsecase) GetAll(idMissing string) []Domain {
+	return lmu.likeMissingRepository.GetAll(idMissing)
 }
 
 func (lmu *likeMissingUsecase) GetByID(idLike string, idMissing string) Domain {

@@ -1,6 +1,7 @@
 package mysql_driver
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"sipencari-api/drivers/mysql/categories"
@@ -8,11 +9,14 @@ import (
 	"sipencari-api/drivers/mysql/hashtags"
 	likescomment "sipencari-api/drivers/mysql/likes_comment"
 	likesmissing "sipencari-api/drivers/mysql/likes_missing"
-	"sipencari-api/drivers/mysql/locations_comment"
-	"sipencari-api/drivers/mysql/locations_missing"
+	locationscomment "sipencari-api/drivers/mysql/locations_comment"
+	locationsmissing "sipencari-api/drivers/mysql/locations_missing"
 	"sipencari-api/drivers/mysql/missings"
 	"sipencari-api/drivers/mysql/users"
+	"sipencari-api/utils"
 
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -72,4 +76,35 @@ func CloseDB(db *gorm.DB) error {
 	return nil
 }
 
-// Seed
+// Seed for testing
+
+func SeedUser(db *gorm.DB) users.User {
+	password, _ := bcrypt.GenerateFromPassword([]byte("testing"), bcrypt.DefaultCost)
+	fakeUser, _ := utils.CreateFaker[users.User]()
+	idUser := uuid.NewString()
+
+	userRecord := users.User{
+		ID: idUser,
+		Name:     fakeUser.Name,
+		Email:    fakeUser.Email,
+		Password: string(password),
+	}
+	if err := db.Create(&userRecord).Error; err != nil {
+		panic(err)
+	}
+	var lastUser users.User
+	db.Last(&lastUser)
+
+	lastUser.Password = "testing"
+	return lastUser
+}
+
+func CleanSeeds(db *gorm.DB) {
+	db.Exec("SET FOREIGN_KEY_CHECKS = 0")
+	userResult := db.Exec("DELETE FROM users")
+
+	if userResult.Error != nil {
+		panic(errors.New("error when cleaning up users seeders"))
+	}
+	log.Println("Seeders are cleaned up successfully")
+}
