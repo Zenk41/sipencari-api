@@ -44,7 +44,7 @@ func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	categories := e.Group("/categories", middleware.JWTWithConfig(cl.JWTMIddleware))      // category
 	categories.GET("", cl.CategoryController.GetAll)                                      // get all category
 	categories.GET("/:category_id", cl.CategoryController.GetByID)                        // get category by ID
-	categories.POST("", cl.CategoryController.Create)                                     // create category
+	categories.POST("", cl.CategoryController.Create, middlewares.IsAdmin)                                     // create category
 	categories.PUT("/:category_id", cl.CategoryController.Update, middlewares.IsAdmin)    // update category
 	categories.DELETE("/:category_id", cl.CategoryController.Delete, middlewares.IsAdmin) // delete category
 
